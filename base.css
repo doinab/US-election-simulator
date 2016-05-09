@@ -1,0 +1,49 @@
+body {
+	background-color: #fff;
+	color: #000;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+	font-size: 20px;
+	text-align: center;
+	padding: 10px;
+}
+
+p {
+	font-size: 12px;
+	text-align: center;
+	color: #000;
+	padding-bottom: 10px;
+}
+
+.totals {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	padding-bottom: 20px;
+}
+
+table {
+	margin: auto;
+	border-collapse: separate;
+	border-spacing: 4px;
+}
+
+td {
+	font-size: 12px;
+	text-align: center;
+	color: #eee;
+	padding: 4px;
+	border-radius: 6px;
+}
+
+.non {
+	background-color: #999;
+}
+.dem {
+	background-color: #6090e0;
+}
+.gop {
+	background-color: #e05050;
+}

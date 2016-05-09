@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="base.css">
+	<title>US Election 2016</title>
+</head>
+<body>
+
+<!--
+   0: 1: 2: 3: 4: 5: 6: 7: 8: 9: 10:11:12:
+0: AK          ND                VT NH ME
+1:    WA MT    SD MN WI MI    NY MA CT RI
+2:    OR ID WY NE IA IL IN OH PA NJ
+3: CA NV UT CO KS MO    KY WV VA MD DE
+4:       AZ NM OK AR    TN    NC DC
+5:             TX LA MS AL GA SC
+6: HI                      FL
+-->
+
+<script type="text/javascript">
+	// the map is a fixed matrix, 7x13, with gaps
+	var map = new Array(7);
+	for (var i = 0; i < 7; i++) {
+		map[i] = new Array(13);
+	}
+
+	// the list of 50 state names plus DC, with abbreviations
+	var state_abbr = ["dummy", 
+					  "AL", "AK", "AZ", "AR", "CA",  //  1: 5
+					  "CO", "CT", "DE", "FL", "GA",  //  6:10
+					  "HI", "ID", "IL", "IN", "IA",  // 11:15
+					  "KS", "KY", "LA", "ME", "MD",  // 16:20
+					  "MA", "MI", "MN", "MS", "MO",  // 21:25
+					  "MT", "NE", "NV", "NH", "NJ",  // 26:30
+					  "NM", "NY", "NC", "ND", "OH",  // 31:35
+					  "OK", "OR", "PA", "RI", "SC",  // 36:40
+					  "SD", "TN", "TX", "UT", "VT",  // 41:45
+					  "VA", "WA", "DC", "WV", "WI", "WY"]; // 46:51
+
+	var state_name = ["dummy",
+					  "Alabama", "Alaska", "Arizona", "Arkansas", "California", 
+					  "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+					  "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", 
+					  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+					  "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
+					  "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+					  "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+					  "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+					  "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+					  "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"];
+
+    // the states are placed on the map via their index (1..51)
+	map[0] = [ 2,  0,  0,  0, 34,  0,  0,  0,  0,  0, 45, 29, 19];
+	map[1] = [ 0, 47, 26,  0, 41, 23, 50, 22,  0, 32, 21,  7, 39];
+	map[2] = [ 0, 37, 12, 51, 27, 15, 13, 14, 35, 38, 30,  0,  0];
+	map[3] = [ 5, 28, 44,  6, 16, 25,  0, 17, 49, 46, 20,  8,  0];
+	map[4] = [ 0,  0,  3, 31, 36,  4,  0, 42,  0, 33, 48,  0,  0];
+	map[5] = [ 0,  0,  0,  0, 43, 18, 24,  1, 10, 40,  0,  0,  0];
+	map[6] = [11,  0,  0,  0,  0,  0,  0,  0,  9,  0,  0,  0,  0];
+
+	// the electoral votes awarded per state
+	var votes = [0,
+				 9, 3, 11, 6, 55,
+				 9, 7, 3, 29, 16, 
+				 4, 4, 20, 11, 6, 
+				 6, 8, 8, 4, 10, 
+				 11, 16, 10, 6, 10, 
+				 3, 5, 6, 4, 14, 
+				 5, 29, 15, 3, 18, 
+				 7, 7, 20, 4, 9, 
+				 3, 11, 38, 6, 3, 
+				 13, 12, 3, 5, 10, 3]; // ...
+
+	var dem_votes = 0;
+	var gop_votes = 0;
+
+	function update_totals(changed_dem, changed_gop) {
+		if (changed_dem) {
+			document.getElementById('total_dem').textContent = "DEM: " + dem_votes + " votes";
+		}
+		if (changed_gop) {
+			document.getElementById('total_gop').textContent = "GOP: " + gop_votes + " votes";
+		}
+	} 
+
+	function toggle_win(state_id) {
+		var changed_dem = 0, changed_gop = 0;
+		var element = document.getElementById('state_' + state_id);
+
+		if (element.className == "non") {
+			element.className = "dem";
+			dem_votes += votes[state_id];
+			changed_dem = 1;
+		}
+		else if (element.className == "dem") {
+			element.className = "gop";
+			dem_votes -= votes[state_id];
+			gop_votes += votes[state_id];
+			changed_dem = 1;
+			changed_gop = 1;
+		}
+		else if (element.className == "gop") {
+			element.className = "non";
+			gop_votes -= votes[state_id];
+			changed_gop = 1;
+		}
+
+		console.log(dem_votes, gop_votes);
+		update_totals(changed_dem, changed_gop);
+	}
+</script>
+
+<h1>A 2016 US election simulator</h1>
+<p>Win a state for a party by clicking on the state to toggle the win.</p>
+<div class="totals">
+	<span id="total_dem">DEM: 0 votes</span>
+	<span id="total_gop">GOP: 0 votes</span>
+</div>
+
+<table>
+<script type="text/javascript">
+	var html_map = "";
+	for (var i = 0; i < 7; i++) {
+		html_map += "<tr>";
+		for (var j = 0; j < 13; j++) {
+			html_map += "<td";
+			html_map += (map[i][j] > 0) ? " id='state_" + map[i][j] + "' class='non'" : "";
+			html_map += "><div";
+			html_map += (map[i][j] > 0) ? (" onclick='toggle_win(" + map[i][j] + ");'>") : ">";
+			html_map += (map[i][j] > 0) ? state_name[map[i][j]] : "";
+			html_map += (map[i][j] > 0) ? "<br><strong>" + state_abbr[map[i][j]] + "</strong><br>" + votes[map[i][j]] : "";
+			html_map += "</div></td>";
+		}
+		html_map += "</tr>";
+	}
+	document.write(html_map);
+</script>
+</table>
+
+
+
+</body>
+</html>
